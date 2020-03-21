@@ -13,7 +13,7 @@ namespace Server
         public static IEnumerable<ApiResource> Apis =>
             new List<ApiResource>
             {
-                new ApiResource("dummy_api")
+                new ApiResource("dummy_api", "My API")
             };
 
         public static IEnumerable<Client> Clients =>
