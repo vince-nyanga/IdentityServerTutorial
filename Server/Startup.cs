@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Server.Data;
 
 namespace Server
 {
@@ -11,7 +14,29 @@ namespace Server
         
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<AppDbContext>(config =>
+            {
+                config.UseInMemoryDatabase("ServerDb");
+            });
+
+            services.AddIdentity<IdentityUser, IdentityRole>(config =>
+            {
+                config.Password.RequiredLength = 5;
+                config.Password.RequireDigit = false;
+                config.Password.RequireUppercase = false;
+                config.Password.RequireNonAlphanumeric = false;
+            })
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.ConfigureApplicationCookie(config =>
+            {
+                config.Cookie.Name = "Server.Cookie";
+                config.LoginPath = "/Account/Login";
+            });
+
             services.AddIdentityServer()
+                .AddAspNetIdentity<IdentityUser>() //New
                 .AddInMemoryApiResources(Configuration.Apis)
                 .AddInMemoryClients(Configuration.Clients)
                 .AddDeveloperSigningCredential();
