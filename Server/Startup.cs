@@ -36,9 +36,10 @@ namespace Server
             });
 
             services.AddIdentityServer()
-                .AddAspNetIdentity<IdentityUser>() //New
+                .AddAspNetIdentity<IdentityUser>()
                 .AddInMemoryApiResources(Configuration.Apis)
                 .AddInMemoryClients(Configuration.Clients)
+                .AddInMemoryIdentityResources(Configuration.IdentityResources) // New
                 .AddDeveloperSigningCredential();
 
             services.AddControllersWithViews();
