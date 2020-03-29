@@ -8,10 +8,14 @@ namespace Server.Controllers
     public class AccountController : Controller
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public AccountController(SignInManager<IdentityUser> signInManager)
+        public AccountController(
+            SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser> userManager)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -35,7 +39,33 @@ namespace Server.Controllers
                 var returnUrl = viewModel.ReturnUrl ?? Url.Content("~/");
                 return Redirect(returnUrl);
             }
-            return View();
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public IActionResult Register(string returnUrl = null)
+        {
+            return View(new RegisterViewModel { ReturnUrl = returnUrl });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            var user = new IdentityUser(viewModel.Username);
+            var result = await _userManager.CreateAsync(user, viewModel.Password);
+
+            if (result.Succeeded)
+            {
+                await _signInManager.SignInAsync(user, false);
+                var returnUrl = viewModel.ReturnUrl ?? Url.Content("~/");
+                return Redirect(returnUrl);
+            }
+            return View(viewModel);
         }
     }
 }

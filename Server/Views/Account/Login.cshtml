@@ -16,3 +16,6 @@
             <button type="submit">Login</button>
         </div>
     </form>
+    <div>
+       You don't have an account? <a asp-controller="Account" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">Register</a>
+    </div>
